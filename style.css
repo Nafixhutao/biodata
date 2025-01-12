@@ -1,0 +1,160 @@
+:root {
+    --bg-color: #1a1b1f;
+    --card-bg: #212226;
+    --text-color: #ffffff;
+    --secondary-text: #808080;
+    --accent-color: #3a3b3f;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 100000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.banner {
+    width: 100%;
+    height: 500px; /* Sesuaikan tinggi dengan rasio 16:9 */
+    outline: auto;
+    border-radius: 14px;
+    margin-bottom: -50px;
+    display: block;
+}
+
+.banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+.profile {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid var(--bg-color);
+    margin-bottom: 15px;
+}
+
+.verified {
+    color: #1DA1F2;
+    margin-left: 5px;
+}
+
+.bio-text {
+    color: var(--secondary-text);
+    margin-top: 10px;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.tags span {
+    background-color: var(--card-bg);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.social-icon {
+    color: var(--text-color);
+    font-size: 20px;
+    text-decoration: none;
+}
+
+.discord-tag {
+    color: var(--secondary-text);
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.link-button {
+    background-color: var(--card-bg);
+    padding: 15px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.link-button:hover {
+    background-color: var(--accent-color);
+}
+
+.link-button i {
+    margin-right: 10px;
+}
+
+.arrow {
+    margin-left: auto;
+}
+
+.spotify-widget {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.spotify-status {
+    color: var(--secondary-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .banner {
+        height: 150px;
+    }
+    
+    .profile-img {
+        width: 80px;
+        height: 80px;
+    }
+}
