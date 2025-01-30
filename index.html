@@ -6,7 +6,7 @@
     <title>KOI - Bio Links</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Base Styles */
+        /* ===== Base Styles ===== */
         * {
             margin: 0;
             padding: 0;
@@ -22,11 +22,11 @@
             overflow-x: hidden;
         }
 
-        /* Video Container */
+        /* ===== Video Container ===== */
         .video-container {
             position: relative;
             width: 100vw;
-            height: 56.25vw;
+            height: 56.25vw; /* 16:9 aspect ratio */
             max-height: 70vh;
             overflow: hidden;
             background: #000;
@@ -37,49 +37,52 @@
             height: 100%;
             object-fit: cover;
             opacity: 0.9;
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
-        /* Profile Section */
+        /* ===== Profile Section ===== */
         .profile {
             position: relative;
             text-align: center;
-            margin: -15vw auto 0;
+            margin: -12vw auto 0;
             max-width: 600px;
             padding: 0 20px;
             z-index: 2;
         }
 
         .profile-img {
-            width: 25vw;
-            height: 25vw;
-            max-width: 150px;
-            max-height: 150px;
+            width: clamp(100px, 25vw, 150px);
+            height: clamp(100px, 25vw, 150px);
             border-radius: 50%;
             border: 3px solid rgba(255, 255, 255, 0.9);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
         }
 
         h1 {
-            margin: 2.5vw 0;
+            margin: 1.5rem 0;
             font-size: clamp(1.5rem, 6vw, 2rem);
+            letter-spacing: -0.5px;
         }
 
         .verified {
             color: #1DA1F2;
             font-size: 0.8em;
+            vertical-align: middle;
         }
 
         .bio-text {
             color: #aaa;
             font-size: clamp(0.9rem, 3vw, 1.1rem);
-            margin-bottom: 5vw;
+            margin-bottom: 2rem;
         }
 
-        /* Tags Section */
+        /* ===== Tags Section ===== */
         .tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.8rem;
             justify-content: center;
             padding: 0 1rem;
             margin-bottom: 2rem;
@@ -87,14 +90,18 @@
 
         .tags span {
             background: #1a1a1a;
-            padding: 0.8rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 30px;
             font-size: 0.9rem;
             border: 1px solid #333;
-            margin: 0.3rem;
+            transition: transform 0.2s ease;
         }
 
-        /* Social Links */
+        .tags span:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ===== Social Links ===== */
         .social-links {
             display: flex;
             justify-content: center;
@@ -105,11 +112,10 @@
         }
 
         .social-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
+            display: grid;
+            place-items: center;
+            width: 2.8rem;
+            height: 2.8rem;
             border-radius: 50%;
             background: #2a2a2a;
             transition: all 0.3s ease;
@@ -118,7 +124,7 @@
         }
 
         .social-icon:hover {
-            transform: translateY(-3px);
+            transform: translateY(-3px) scale(1.05);
             background: #3a3a3a;
         }
 
@@ -133,7 +139,7 @@
             color: #7289da;
         }
 
-        /* Bio Links */
+        /* ===== Bio Links ===== */
         .bio-links {
             max-width: 600px;
             margin: 0 auto 2rem;
@@ -145,56 +151,52 @@
             align-items: center;
             background: #1a1a1a;
             color: #fff;
-            padding: 1.2rem;
+            padding: 1rem;
             margin: 0.8rem 0;
-            border-radius: 15px;
+            border-radius: 12px;
             text-decoration: none;
             border: 1px solid #333;
             transition: all 0.3s ease;
         }
 
-        .bio-link i {
-            width: 1.5em;
-            margin-right: 1rem;
-            font-size: 1.2em;
+        .bio-link:hover {
+            background: #252525;
+            transform: translateX(8px);
         }
 
-        /* Spotify Widget */
+        .bio-link i {
+            width: 1.8rem;
+            font-size: 1.2rem;
+            margin-right: 1rem;
+        }
+
+        /* ===== Spotify Widget ===== */
         .spotify-widget {
             text-align: center;
             color: #8b8b8b;
-            padding: 5vw;
+            padding: 2rem 1rem;
             font-size: clamp(0.8rem, 3vw, 1rem);
         }
 
-        /* Responsive Adjustments */
+        /* ===== Responsive Adjustments ===== */
         @media (min-width: 768px) {
             .profile {
-                margin-top: -100px;
+                margin-top: -90px;
             }
             
-            .profile-img {
-                width: 150px;
-                height: 150px;
-            }
-
             .bio-link {
-                padding: 1.5rem;
+                padding: 1.2rem;
                 margin: 1rem 0;
             }
 
             .tags span {
-                padding: 1rem 2rem;
-            }
-
-            .social-links {
-                gap: 2rem;
+                padding: 0.8rem 1.5rem;
             }
         }
 
         @media (max-width: 480px) {
             .video-container {
-                max-height: 50vh;
+                max-height: 55vh;
             }
 
             .social-links {
@@ -203,19 +205,13 @@
             }
 
             .social-icon {
-                width: 35px;
-                height: 35px;
-                font-size: 1rem;
-            }
-
-            .discord-tag {
-                font-size: 0.8rem;
-                padding: 0.5rem 1rem;
-                margin-top: 0.5rem;
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1.1rem;
             }
 
             .bio-link:hover {
-                transform: none;
+                transform: translateX(4px);
             }
         }
     </style>
@@ -224,7 +220,16 @@
     <!-- Video Section -->
     <div class="video-container">
         <div class="banner">
-            <video src="gggg.mp4" class="banner-video" autoplay loop muted playsinline></video>
+            <video class="banner-video" 
+                   autoplay 
+                   loop 
+                   muted 
+                   playsinline 
+                   preload="auto"
+                   poster="thumbnail.jpg">
+                <source src="gggg.webm" type="video/webm">
+                <source src="gggg.mp4" type="video/mp4">
+            </video>
         </div>
     </div>
 
