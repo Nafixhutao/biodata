@@ -194,8 +194,6 @@
                 padding: 0.8rem 1.5rem;
             }
         }
-            /* CSS: Nonaktifkan video pada layar kecil */
-
 
         @media (max-width: 480px) {
             .video-container {
@@ -223,9 +221,10 @@
     <!-- HTML -->
 <div class="video-container">
     <div class="banner">
-        <video class="banner-video" autoplay loop muted playsinline disablePictureInPicture preload="auto" poster="thumbnail.jpg">
+        <video class="banner-video" autoplay loop muted playsinline preload="auto" poster="thumbnail.jpg">
             <source src="https://files.catbox.moe/fvm1dd.mp4" type="video/webm">
-           
+            <source src="https://files.catbox.moe/fvm1dd.mp4" type="video/mp4">
+            Your browser does not support the video tag.
         </video>
     </div>
 </div>
