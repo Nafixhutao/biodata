@@ -194,6 +194,12 @@
                 padding: 0.8rem 1.5rem;
             }
         }
+            /* CSS: Nonaktifkan video pada layar kecil */
+@media (max-width: 480px) {
+    .video-container {
+        display: none; /* atau gunakan background-image: url('thumbnail.jpg'); */
+    }
+}
 
         @media (max-width: 480px) {
             .video-container {
@@ -218,22 +224,15 @@
     </style>
 </head>
 <body>
-    <!-- Video Section -->
-    <div class="video-container">
-        <div class="banner">
-            <video class="banner-video" 
-                   autoplay 
-                   loop 
-                   muted 
-                   playsinline 
-                   disablePictureInPicture
-                   preload="none"
-                   poster="thumbnail.jpg">
-                <source src="gggg.webm" type="video/webm">
-                <source src="gggg.mp4" type="video/mp4">
-            </video>
-        </div>
+    <!-- HTML -->
+<div class="video-container">
+    <div class="banner">
+        <video class="banner-video" autoplay loop muted playsinline disablePictureInPicture preload="auto" poster="thumbnail.jpg">
+            <source src="gggg.webm" type="video/webm">
+            <source src="gggg.mp4" type="video/mp4">
+        </video>
     </div>
+</div>
 
     <!-- Profile Section -->
     <div class="profile">
