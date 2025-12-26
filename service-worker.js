@@ -1,11 +1,8 @@
-const CACHE_NAME = 'nazxf-bio-v1';
+const CACHE_NAME = 'nazxf-bio-v2';
 const urlsToCache = [
     '/',
     '/index.html',
-    '/hutao.jpg',
-    'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-    'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js'
+    '/hutao.jpg'
 ];
 
 // Install Service Worker
@@ -15,9 +12,7 @@ self.addEventListener('install', event => {
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log('Service Worker: Caching files');
-                return cache.addAll(urlsToCache.map(url => {
-                    return new Request(url, { cache: 'reload' });
-                })).catch(err => {
+                return cache.addAll(urlsToCache).catch(err => {
                     console.log('Service Worker: Cache failed for some files', err);
                 });
             })
@@ -43,53 +38,86 @@ self.addEventListener('activate', event => {
     return self.clients.claim();
 });
 
-// Fetch Event - Network First, fallback to Cache
+// Helper function to check if request should be cached
+function shouldCache(request) {
+    const url = new URL(request.url);
+
+    // Only cache http/https requests
+    if (!url.protocol.startsWith('http')) {
+        return false;
+    }
+
+    // Don't cache POST, PUT, DELETE requests
+    if (request.method !== 'GET') {
+        return false;
+    }
+
+    // Don't cache chrome extensions
+    if (url.protocol === 'chrome-extension:') {
+        return false;
+    }
+
+    // Don't cache video/audio files (they use Range requests)
+    if (request.url.match(/\.(mp4|webm|ogg|mp3|wav|m4a)$/i)) {
+        return false;
+    }
+
+    // Don't cache large files
+    if (request.url.match(/\.(zip|rar|7z|tar|gz)$/i)) {
+        return false;
+    }
+
+    return true;
+}
+
+// Fetch Event - Cache first, fallback to network
 self.addEventListener('fetch', event => {
     const { request } = event;
 
-    // Skip caching for video files and large media (they use Range requests)
-    const isVideo = request.url.match(/\.(mp4|webm|ogg)$/i);
-    const isLargeFile = request.url.match(/\.(mp4|webm|ogg|zip|rar)$/i);
-
-    if (isVideo || isLargeFile) {
-        // Just fetch without caching for large files
+    // Skip non-cacheable requests
+    if (!shouldCache(request)) {
         event.respondWith(fetch(request));
         return;
     }
 
     event.respondWith(
-        fetch(request)
-            .then(response => {
-                // Only cache successful full responses (200, not 206 partial)
-                if (!response || response.status !== 200 || response.type === 'error') {
-                    return response;
+        caches.match(request)
+            .then(cachedResponse => {
+                // Return cached version if available
+                if (cachedResponse) {
+                    return cachedResponse;
                 }
 
-                // Clone the response
-                const responseToCache = response.clone();
-
-                // Cache the fetched response (skip video/large files)
-                caches.open(CACHE_NAME)
-                    .then(cache => {
-                        cache.put(request, responseToCache);
-                    })
-                    .catch(err => {
-                        console.log('Cache put error:', err);
-                    });
-
-                return response;
-            })
-            .catch(() => {
-                // If fetch fails, return from cache
-                return caches.match(request)
+                // Otherwise fetch from network
+                return fetch(request)
                     .then(response => {
-                        if (response) {
+                        // Check if valid response
+                        if (!response || response.status !== 200 || response.type === 'error') {
                             return response;
                         }
-                        // Return a custom offline page if needed
-                        if (request.destination === 'document') {
-                            return caches.match('/index.html');
-                        }
+
+                        // Clone the response
+                        const responseToCache = response.clone();
+
+                        // Cache the new response
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                cache.put(request, responseToCache);
+                            })
+                            .catch(err => {
+                                // Silently fail cache put
+                                console.log('Cache put skipped:', err.message);
+                            });
+
+                        return response;
+                    })
+                    .catch(err => {
+                        console.log('Fetch failed, serving offline:', err);
+                        // Could return offline page here
+                        return new Response('Offline - Please check your connection', {
+                            status: 503,
+                            statusText: 'Service Unavailable'
+                        });
                     });
             })
     );
