@@ -454,9 +454,11 @@
         <a href="https://discord.gg" class="bio-link" target="_blank"><i class="fab fa-discord"></i> Discord Server</a>
         <a href="#" class="bio-link" target="_blank"><i class="fas fa-globe"></i> Website</a>
 
-        <!-- PWA Install Button (will show when installable) -->
-        <button id="install-button" class="bio-link" style="display: none; border: none; cursor: pointer; width: 100%;">
-            <i class="fas fa-download"></i> Install App
+
+        <!-- PWA Install Button (Always visible) -->
+        <button id="install-button" class="bio-link"
+            style="border: none; cursor: pointer; width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="fas fa-download"></i> <span id="install-text">Install App</span>
         </button>
     </div>
 
@@ -629,37 +631,60 @@
             // Stash the event so it can be triggered later
             deferredPrompt = e;
 
-            // Show the install button
-            if (installButton) {
-                installButton.style.display = 'flex';
-                console.log('💡 PWA can be installed!');
-            }
+            // Log that PWA is installable
+            console.log('💡 PWA can be installed!');
         });
 
         // Handle install button click
         if (installButton) {
             installButton.addEventListener('click', async () => {
-                if (!deferredPrompt) {
-                    return;
-                }
+                // If PWA installable via prompt (Chrome/Edge/Android)
+                if (deferredPrompt) {
+                    try {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
 
-                // Show the install prompt
-                deferredPrompt.prompt();
+                        if (outcome === 'accepted') {
+                            console.log('✅ User accepted the install prompt');
+                            installButton.style.display = 'none';
+                        } else {
+                            console.log('❌ User dismissed the install prompt');
+                        }
 
-                // Wait for the user to respond to the prompt
-                const { outcome } = await deferredPrompt.userChoice;
-
-                if (outcome === 'accepted') {
-                    console.log('✅ User accepted the install prompt');
+                        deferredPrompt = null;
+                    } catch (err) {
+                        console.log('Install error:', err);
+                        showManualInstructions();
+                    }
                 } else {
-                    console.log('❌ User dismissed the install prompt');
+                    // Show manual instructions if prompt not available
+                    showManualInstructions();
                 }
-
-                // Clear the deferredPrompt for next time
-                deferredPrompt = null;
-                installButton.style.display = 'none';
             });
         }
+
+        // Function to show manual install instructions
+        function showManualInstructions() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            let message = '';
+
+            if (isIOS) {
+                message = '📱 Cara Install di iPhone/iPad:\n\n' +
+                    '1. Tap tombol Share (⬆️) di bawah\n' +
+                    '2. Scroll dan tap "Add to Home Screen"\n' +
+                    '3. Tap "Add"\n' +
+                    '✅ Icon muncul di home screen!';
+            } else {
+                message = '📱 Cara Install App:\n\n' +
+                    '1. Tap menu browser (⋮ tiga titik)\n' +
+                    '2. Pilih "Install app" atau "Add to home screen"\n' +
+                    '3. Tap "Install"\n' +
+                    '✅ Icon muncul di home screen!';
+            }
+
+            alert(message);
+        }
+
 
         // Detect when PWA is installed
         window.addEventListener('appinstalled', () => {
