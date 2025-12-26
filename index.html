@@ -453,6 +453,11 @@
         <a href="https://twitch.tv" class="bio-link" target="_blank"><i class="fab fa-twitch"></i> Twitch</a>
         <a href="https://discord.gg" class="bio-link" target="_blank"><i class="fab fa-discord"></i> Discord Server</a>
         <a href="#" class="bio-link" target="_blank"><i class="fas fa-globe"></i> Website</a>
+
+        <!-- PWA Install Button (will show when installable) -->
+        <button id="install-button" class="bio-link" style="display: none; border: none; cursor: pointer; width: 100%;">
+            <i class="fas fa-download"></i> Install App
+        </button>
     </div>
 
     <!-- Spotify Widget -->
@@ -616,28 +621,61 @@
 
         // PWA Install Prompt
         let deferredPrompt;
+        const installButton = document.getElementById('install-button');
+
         window.addEventListener('beforeinstallprompt', (e) => {
             // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
             // Stash the event so it can be triggered later
             deferredPrompt = e;
 
-            // Optional: Show custom install button
-            console.log('💡 PWA can be installed!');
-
-            // You can show a custom install button here if needed
-            // Example: document.getElementById('install-button').style.display = 'block';
+            // Show the install button
+            if (installButton) {
+                installButton.style.display = 'flex';
+                console.log('💡 PWA can be installed!');
+            }
         });
+
+        // Handle install button click
+        if (installButton) {
+            installButton.addEventListener('click', async () => {
+                if (!deferredPrompt) {
+                    return;
+                }
+
+                // Show the install prompt
+                deferredPrompt.prompt();
+
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+
+                if (outcome === 'accepted') {
+                    console.log('✅ User accepted the install prompt');
+                } else {
+                    console.log('❌ User dismissed the install prompt');
+                }
+
+                // Clear the deferredPrompt for next time
+                deferredPrompt = null;
+                installButton.style.display = 'none';
+            });
+        }
 
         // Detect when PWA is installed
         window.addEventListener('appinstalled', () => {
             console.log('✅ PWA installed successfully!');
             deferredPrompt = null;
+            if (installButton) {
+                installButton.style.display = 'none';
+            }
         });
 
         // Check if app is running as PWA
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
             console.log('🚀 Running as PWA!');
+            if (installButton) {
+                installButton.style.display = 'none';
+            }
         }
     </script>
 </body>

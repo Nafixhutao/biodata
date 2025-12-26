@@ -3,7 +3,6 @@ const urlsToCache = [
     '/',
     '/index.html',
     '/hutao.jpg',
-    '/gggg.mp4',
     'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
     'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js'
@@ -46,29 +45,49 @@ self.addEventListener('activate', event => {
 
 // Fetch Event - Network First, fallback to Cache
 self.addEventListener('fetch', event => {
+    const { request } = event;
+
+    // Skip caching for video files and large media (they use Range requests)
+    const isVideo = request.url.match(/\.(mp4|webm|ogg)$/i);
+    const isLargeFile = request.url.match(/\.(mp4|webm|ogg|zip|rar)$/i);
+
+    if (isVideo || isLargeFile) {
+        // Just fetch without caching for large files
+        event.respondWith(fetch(request));
+        return;
+    }
+
     event.respondWith(
-        fetch(event.request)
+        fetch(request)
             .then(response => {
+                // Only cache successful full responses (200, not 206 partial)
+                if (!response || response.status !== 200 || response.type === 'error') {
+                    return response;
+                }
+
                 // Clone the response
                 const responseToCache = response.clone();
 
-                // Cache the fetched response
+                // Cache the fetched response (skip video/large files)
                 caches.open(CACHE_NAME)
                     .then(cache => {
-                        cache.put(event.request, responseToCache);
+                        cache.put(request, responseToCache);
+                    })
+                    .catch(err => {
+                        console.log('Cache put error:', err);
                     });
 
                 return response;
             })
             .catch(() => {
                 // If fetch fails, return from cache
-                return caches.match(event.request)
+                return caches.match(request)
                     .then(response => {
                         if (response) {
                             return response;
                         }
                         // Return a custom offline page if needed
-                        if (event.request.destination === 'document') {
+                        if (request.destination === 'document') {
                             return caches.match('/index.html');
                         }
                     });
