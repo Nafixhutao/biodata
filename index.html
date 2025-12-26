@@ -626,13 +626,12 @@
         const installButton = document.getElementById('install-button');
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
-            e.preventDefault();
-            // Stash the event so it can be triggered later
+            // DONT prevent - Let native banner show!
+            // Store event for manual install button
             deferredPrompt = e;
 
             // Log that PWA is installable
-            console.log('💡 PWA can be installed!');
+            console.log('💡 PWA can be installed! Native banner will show.');
         });
 
         // Handle install button click
